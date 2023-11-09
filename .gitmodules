@@ -1,0 +1,3 @@
+[submodule "facoffee-financeiro"]
+	path = facoffee-financeiro
+	url = git@github.com:hsborges/facoffee-financeiro.git

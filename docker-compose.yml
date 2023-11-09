@@ -1,0 +1,80 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:alpine
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-facoffee_db}
+      POSTGRES_USER: ${POSTGRES_USER:-facoffee}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-facoffee}
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', '${POSTGRES_USER:-facoffee}', '-d', '${POSTGRES_DB:-facoffee_db}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: start
+    restart: unless-stopped
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER:-facoffee}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-facoffeepass}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db/${POSTGRES_DB:-facoffee_db}
+      KC_DB_USERNAME: ${POSTGRES_USER:-facoffee}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-facoffee}
+      KC_HTTP_ENABLED: true
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HOSTNAME_STRICT: false
+      KC_PROXY: edge
+      KC_PROXY_ADDRESS_FORWARDING: true
+    volumes:
+      - ./data/backups:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+  
+  financeiro_api:
+    build:
+      context: ./facoffee-financeiro
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 80
+      BASE_URL: /api/financeiro
+      KEYCLOAK_URL: http://keycloak:8080/auth
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM:-facoffee}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-microservice}
+    volumes:
+      - ./data/financeiro:/app/data
+    links:
+      - keycloak
+
+  caddy:
+    image: caddy:alpine
+    command: caddy run --watch -c /etc/caddy/Caddyfile
+    restart: unless-stopped
+    ports:
+      - ${HTTP_PORT:-80}:80
+      - ${HTTPS_PORT:-443}:443
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/caddy:/data
+    depends_on:
+      - keycloak
+      - financeiro_api
+    healthcheck:
+      test: ["CMD", "caddy", "version"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  postgres_data:
+    driver: local
