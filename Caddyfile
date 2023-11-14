@@ -1,12 +1,12 @@
 {$DOMAIN:http://localhost} {
 	redir /auth /auth/
 	handle /auth/* {
-		reverse_proxy keycloak:8080
+		reverse_proxy http://keycloak:8080
 	}
 
 	redir /docs/financeiro /docs/financeiro/
 	handle_path /docs/financeiro/* {
-		uri replace / /docs/
+		uri replace / /docs/ 1
 		reverse_proxy financeiro_api:80
 	}
 
