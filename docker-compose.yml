@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
     environment:
       PORT: 80
-      BASE_URL: /
+      BASE_URL: /api
       KEYCLOAK_URL: http://keycloak:8080/
       KEYCLOAK_REALM: ${KEYCLOAK_REALM:-facoffee}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-facoffee}
