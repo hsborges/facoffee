@@ -38,6 +38,7 @@ services:
     command: caddy run --watch -c /etc/caddy/Caddyfile
     restart: unless-stopped
     environment:
+      PROTOCOL: ${PROTOCOL:-http}
       DOMAIN: ${DOMAIN:-localhost}
     ports:
       - ${HTTP_PORT:-80}:80
