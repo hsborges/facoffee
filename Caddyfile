@@ -1,22 +1,12 @@
-{$DOMAIN:http://localhost} {
-	redir /auth /auth/
-	handle /auth/* {
-		reverse_proxy http://keycloak:8080
-	}
+{$PROTOCOL:http}://auth.{$DOMAIN:localhost} {
+	reverse_proxy http://keycloak:8080
+}
 
-	redir /docs/financeiro /docs/financeiro/
-	handle_path /docs/financeiro/* {
-		uri replace / /docs/ 1
-		reverse_proxy financeiro_api:80
-	}
+{$PROTOCOL:http}://fin.{$DOMAIN:localhost} {
+	reverse_proxy financeiro_api:80
+}
 
-
-	redir /api/financeiro /api/financeiro/
-	handle_path /api/financeiro/* {
-		uri replace / /api/ 1
-		reverse_proxy financeiro_api:80
-	}
-
+{$PROTOCOL:http}://{$DOMAIN:localhost} {
 	handle {
 		respond 404
 	}
