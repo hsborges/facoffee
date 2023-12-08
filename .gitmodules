@@ -1,0 +1,6 @@
+[submodule "services/facoffee-auth"]
+	path = services/facoffee-auth
+	url = https://github.com/hsborges/facoffee-auth.git
+[submodule "services/facoffee-api"]
+	path = services/facoffee-api
+	url = https://github.com/hsborges/facoffee-api.git

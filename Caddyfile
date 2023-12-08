@@ -1,12 +1,8 @@
-{$PROTOCOL:http}://auth.{$DOMAIN:localhost} {
-	reverse_proxy http://keycloak:8080
-}
-
-{$PROTOCOL:http}://fin.{$DOMAIN:localhost} {
-	reverse_proxy financeiro_api:80
-}
-
 {$PROTOCOL:http}://{$DOMAIN:localhost} {
+	handle /auth* {
+		reverse_proxy auth:80
+	}
+
 	handle {
 		respond 404
 	}
