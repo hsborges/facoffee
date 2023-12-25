@@ -3,6 +3,15 @@
 		reverse_proxy auth:80
 	}
 
+	handle /api* {
+		reverse_proxy api:80/api
+	}
+
+	handle /api/docs/* {
+		uri strip_prefix /api
+		reverse_proxy api:80
+	}
+
 	handle {
 		respond 404
 	}

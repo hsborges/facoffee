@@ -1,8 +1,8 @@
-version: '3'
+version: "3"
 
 services:
   db:
-    image: 'postgres:latest'
+    image: "postgres:latest"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-facoffee}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-facoffee}
@@ -14,16 +14,16 @@ services:
     ports:
       - 5432:5432
     healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'facoffee', '-d', 'postgres']
+      test: ["CMD", "pg_isready", "-U", "facoffee", "-d", "postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
-  
+
   supertokens:
     image: registry.supertokens.io/supertokens/supertokens-postgresql
     restart: unless-stopped
     environment:
-      POSTGRESQL_CONNECTION_URI: 'postgresql://${POSTGRES_USER:-facoffee}:${POSTGRES_PASSWORD:-facoffee}@db:5432/facoffee_auth_db'
+      POSTGRESQL_CONNECTION_URI: "postgresql://${POSTGRES_USER:-facoffee}:${POSTGRES_PASSWORD:-facoffee}@db:5432/facoffee_auth_db"
       ACCESS_TOKEN_VALIDITY: 3600
       REFRESH_TOKEN_VALIDITY: 43200
       API_KEYS: ${SUPERTOKENS_API_KEY?api key is required for supertokens}
@@ -43,6 +43,7 @@ services:
     build:
       context: services/facoffee-auth
       dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
       PORT: 80
       SUPERTOKENS_URL: http://supertokens:3567
@@ -51,10 +52,25 @@ services:
       BASE_URL_PATH: /auth
       WEBSITE_URL: ${DOMAIN:-http://localhost:${HTTP_PORT:-8080}}
       WEBSITE_URL_PATH: /
-    restart: unless-stopped
     depends_on:
       supertokens:
         condition: service_healthy
+
+  api:
+    build:
+      context: services/facoffee-api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 80
+      DATABASE_URL: postgresql://${POSTGRES_USER:-facoffee}:${POSTGRES_PASSWORD:-facoffee}@db:5432/facoffee_api_db
+      BASE_URL: ${DOMAIN:-http://localhost:${HTTP_PORT:-8080}}/api
+      AUTH_BASE_URL: http://auth:80/auth
+      DATA_DIR: /data
+    volumes:
+      - ./data:/data
+    depends_on:
+      - auth
 
   caddy:
     image: caddy:alpine
@@ -70,12 +86,12 @@ services:
       - caddy_data:/data
     depends_on:
       - auth
+      - api
     healthcheck:
       test: ["CMD", "caddy", "version"]
       interval: 10s
       timeout: 5s
       retries: 5
-
 
 volumes:
   postgres_data:
