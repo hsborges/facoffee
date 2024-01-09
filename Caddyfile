@@ -13,6 +13,6 @@
 	}
 
 	handle {
-		respond 404
+		reverse_proxy website:80
 	}
 }

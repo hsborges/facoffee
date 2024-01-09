@@ -4,3 +4,6 @@
 [submodule "services/facoffee-api"]
 	path = services/facoffee-api
 	url = https://github.com/hsborges/facoffee-api.git
+[submodule "services/facoffee-website"]
+	path = services/facoffee-website
+	url = https://github.com/hsborges/facoffee-website.git

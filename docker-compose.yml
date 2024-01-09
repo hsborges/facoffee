@@ -27,8 +27,8 @@ services:
       ACCESS_TOKEN_VALIDITY: 3600
       REFRESH_TOKEN_VALIDITY: 43200
       API_KEYS: ${SUPERTOKENS_API_KEY?api key is required for supertokens}
-    # ports:
-    #   - 3567:3567
+    ports:
+      - 3567:3567
     depends_on:
       db:
         condition: service_healthy
@@ -72,6 +72,17 @@ services:
     depends_on:
       - auth
 
+  website:
+    build:
+      context: services/facoffee-website
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 80
+    depends_on:
+      - auth
+      - api
+
   caddy:
     image: caddy:alpine
     command: caddy run --watch -c /etc/caddy/Caddyfile
@@ -87,6 +98,7 @@ services:
     depends_on:
       - auth
       - api
+      - website
     healthcheck:
       test: ["CMD", "caddy", "version"]
       interval: 10s
