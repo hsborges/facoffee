@@ -10,7 +10,7 @@ test('deve apresentar link para login', async ({ page }) => {
 
 test('deve ser obrigatorio informar campos obrigatórios', async ({ page }) => {
   await expect(page.getByLabel('Nome').first()).toHaveAttribute('aria-required', 'true');
-  await expect(page.getByLabel('Sobernome').first()).toHaveAttribute('aria-required', 'true');
+  await expect(page.getByLabel('Sobrenome').first()).toHaveAttribute('aria-required', 'true');
   await expect(page.getByLabel('Email')).toHaveAttribute('aria-required', 'true');
   await expect(page.getByLabel('Senha').first()).toHaveAttribute('aria-required', 'true');
   await expect(page.getByLabel('Confirmar Senha').first()).toHaveAttribute('aria-required', 'true');
@@ -18,7 +18,7 @@ test('deve ser obrigatorio informar campos obrigatórios', async ({ page }) => {
 
 test('deve aceitar senhas de no mínimo 8 caracteres e uma letra', async ({ page }) => {
   await page.getByLabel('Nome').first().fill(faker.person.firstName());
-  await page.getByLabel('Sobernome').first().fill(faker.person.lastName());
+  await page.getByLabel('Sobrenome').first().fill(faker.person.lastName());
   await page.getByLabel('Email').fill(faker.internet.email());
 
   await page.getByLabel('Senha').first().fill('1234567');
@@ -48,7 +48,7 @@ test('deve aceitar senhas de no mínimo 8 caracteres e uma letra', async ({ page
 
 test('deve alertar se senhas não conferem', async ({ page }) => {
   await page.getByLabel('Nome').first().fill(faker.person.firstName());
-  await page.getByLabel('Sobernome').first().fill(faker.person.lastName());
+  await page.getByLabel('Sobrenome').first().fill(faker.person.lastName());
   await page.getByLabel('Email').fill(faker.internet.email());
 
   await page.getByLabel('Senha').first().fill('12345678');
@@ -70,7 +70,7 @@ test('deve alertar se senhas não conferem', async ({ page }) => {
 
 test('deve aceitar somente emails do domínio @ufms.br', async ({ page }) => {
   await page.getByLabel('Nome').first().fill(faker.person.firstName());
-  await page.getByLabel('Sobernome').first().fill(faker.person.lastName());
+  await page.getByLabel('Sobrenome').first().fill(faker.person.lastName());
 
   await page.getByLabel('Email').fill(faker.internet.email());
   await page.getByLabel('Senha').first().fill('1234567a');
